@@ -62,7 +62,7 @@ public class GpsFragment extends Fragment implements LocationListener, OnClickLi
 		Log.d(TAG, "onLocationChanged: "+location);
 		String text = 
 				Location.convert(location.getLatitude(), Location.FORMAT_DEGREES)
-				+ "+++"
+				+ " : "
 				+ Location.convert(location.getLongitude(), Location.FORMAT_DEGREES);
 		mTextView.setText(text);
 	}
