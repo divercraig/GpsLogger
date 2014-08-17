@@ -23,6 +23,7 @@ public class PassiveGpsBroadcastReceiver extends BroadcastReceiver {
 	
 	private static final String TAG = PassiveGpsBroadcastReceiver.class.getSimpleName();
 	private static final String ACTION_PASSIVE_GPS = "uk.co.craigwarren.gpslogger.PASSIVE_GPS";
+	private GpsLogger logger = new GpsLogger();
 	
 	/* (non-Javadoc)
 	 * @see android.content.BroadcastReceiver#onReceive(android.content.Context, android.content.Intent)
@@ -47,35 +48,11 @@ public class PassiveGpsBroadcastReceiver extends BroadcastReceiver {
 	private void handleGpsIntent(Context context, Intent intent) {
 		Log.d(TAG, "Received Passive Location Intent");
 		if(intent.hasExtra(LocationManager.KEY_LOCATION_CHANGED)) {
-			GpsDatabaseHelper helper = new GpsDatabaseHelper(context);
-			SQLiteDatabase db = helper.getWritableDatabase();
 			Location loc = (Location) intent.getExtras().get(LocationManager.KEY_LOCATION_CHANGED);
-			long id = db.insert(Contract.GpsLog.TABLE_NAME, null, convertToContentValues(loc));
-			Log.d(TAG, "Location "+loc.getLatitude()+" : "+loc.getLongitude()+" written to row "+id);
+			logger.logGpsLocation(context, loc);
 		} else {
 			Log.w(TAG, "Couldn't find a location in the GPS Update intent");
 		}
-	}
-	
-	private ContentValues convertToContentValues(Location loc) {
-		ContentValues values = new ContentValues();
-		if(loc.hasAccuracy()) {
-			values.put(Contract.GpsLog.ACCURACY, loc.getAccuracy());
-		}
-		if(loc.hasAltitude()) {
-			values.put(Contract.GpsLog.ALTITUDE, loc.getAltitude());
-		}
-		if(loc.hasBearing()) {
-			values.put(Contract.GpsLog.BEARING, loc.getBearing());
-		}
-		if(loc.hasSpeed()) {
-			values.put(Contract.GpsLog.SPEED, loc.getSpeed());
-		}
-		values.put(Contract.GpsLog.LATITUDE, loc.getLatitude());
-		values.put(Contract.GpsLog.LONGITUDE, loc.getLongitude());
-		values.put(Contract.GpsLog.PROVIDER, loc.getProvider());
-		values.put(Contract.GpsLog.TIME, loc.getTime());
-		return values;
 	}
 
 }
